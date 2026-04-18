@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题库中心 - 英语练功房</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-lg gradient-bg flex items-center justify-center">
+                        <i class="fas fa-language text-white text-lg"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-900">英语练功房</span>
+                </a>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">首页</a>
+                    <a href="practice.html" class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">题库</a>
+                    <a href="progress.html" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors">我的进度</a>
+                    <a href="vip.html" class="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors flex items-center gap-1">
+                        <i class="fas fa-crown"></i> VIP订阅
+                    </a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <i class="fas fa-bell text-gray-500 hover:text-gray-700 cursor-pointer"></i>
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+                            李
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">题库中心</h1>
+                <p class="mt-2 text-gray-600">选择场景，开始你的英语练习之旅</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap items-center gap-4 mb-8">
+                <div class="flex items-center gap-2 bg-white rounded-xl p-1 border border-gray-200">
+                    <button class="px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium">全部</button>
+                    <button class="px-4 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors">基础</button>
+                    <button class="px-4 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors">进阶</button>
+                    <button class="px-4 py-2 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors">困难</button>
+                </div>
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" placeholder="搜索场景..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none transition-all">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    <span>共 6 个场景</span>
+                </div>
+            </div>
+
+            <!-- Scene Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- IT Programming -->
+                <a href="practice-it.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-code text-white text-2xl"></i>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
+                                    <i class="fas fa-fire mr-1"></i>热门
+                                </span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            IT与编程英语
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            程序员专属技术英语，涵盖代码部署、接口调用、Code Review等场景
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 20题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 30分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">L2 进阶</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-blue-500 to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+
+                <!-- Daily Life -->
+                <a href="practice-daily.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-home text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            日常口语
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            日常生活中的实用表达，轻松应对各种日常对话场景
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 15题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 20分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">L1 基础</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-green-500 to-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+
+                <!-- Travel -->
+                <a href="practice-travel.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-plane text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            出国旅游
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            旅行中的常用英语对话，让你的出境游沟通无障碍
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 18题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 25分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">L1 基础</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+
+                <!-- Business -->
+                <a href="practice-business.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-briefcase text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            商务场景
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            职场商务英语表达，提升职场沟通专业度
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 22题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 35分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">L2 进阶</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-amber-500 to-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+
+                <!-- CET -->
+                <a href="practice-cet.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-book text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            四六级
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            大学英语四六级备考，专项训练翻译题型
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 25题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 40分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">L2 进阶</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-purple-500 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+
+                <!-- IELTS -->
+                <a href="practice-ielts.html" class="group relative bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:border-primary-300 hover:shadow-xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center shadow-lg">
+                                <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-medium">
+                                <i class="fas fa-star mr-1"></i>高级
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            雅思托福
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            雅思/托福考试训练，备战出国语言考试
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 30题</span>
+                                <span><i class="fas fa-clock mr-1"></i> 50分钟</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium">L3 困难</span>
+                        </div>
+                    </div>
+                    <div class="h-1.5 bg-gradient-to-r from-rose-500 to-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="mt-16 bg-white rounded-2xl border border-gray-200 p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">练习数据统计</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center p-4 bg-gray-50 rounded-xl">
+                        <div class="text-3xl font-bold text-primary-600 mb-1">156</div>
+                        <div class="text-sm text-gray-600">总练习次数</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-xl">
+                        <div class="text-3xl font-bold text-green-600 mb-1">82</div>
+                        <div class="text-sm text-gray-600">完成题目数</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-xl">
+                        <div class="text-3xl font-bold text-amber-600 mb-1">78.5</div>
+                        <div class="text-sm text-gray-600">平均得分</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-xl">
+                        <div class="text-3xl font-bold text-purple-600 mb-1">7</div>
+                        <div class="text-sm text-gray-600">连续打卡天数</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
+                        <i class="fas fa-language text-white text-sm"></i>
+                    </div>
+                    <span class="font-semibold">英语练功房</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition-colors">服务条款</a>
+                    <a href="#" class="hover:text-white transition-colors">隐私政策</a>
+                    <a href="#" class="hover:text-white transition-colors">联系我们</a>
+                </div>
+                <p class="text-sm text-gray-400">© 2024 English Training Room. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
