@@ -1,5 +1,18 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(ls -la src/db/)",
+      "Bash(ls -la prisma/)",
+      "Bash(npx tsx *)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(lsof -ti:3001)",
+      "Bash(xargs kill *)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist /FI \"PID eq 23092\")",
+      "Bash(tasklist)",
+      "Bash(curl -s -x http://localhost:3001 http://notexist)",
+      "Bash(taskkill //F //PID 23092)"
+    ],
     "additionalDirectories": [
       "c:\\Users\\承学\\Documents\\英语\\english-training-room\\apps\\web\\src\\app\\practice"
     ]

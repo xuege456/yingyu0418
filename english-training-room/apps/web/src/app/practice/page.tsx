@@ -1,55 +1,149 @@
-import Link from "next/link";
+'use client';
 
-const SCENES = [
-  { code: "daily", name: "日常口语", icon: "🏠", difficulty: "BEGINNER" },
-  { code: "travel", name: "出国旅游", icon: "✈️", difficulty: "BEGINNER" },
-  { code: "business", name: "商务场景", icon: "💼", difficulty: "INTERMEDIATE" },
-  { code: "cet", name: "四六级", icon: "📚", difficulty: "INTERMEDIATE" },
-  { code: "ielts", name: "雅思托福", icon: "🎓", difficulty: "ADVANCED" },
-  { code: "it-programming", name: "IT与编程英语", icon: "💻", difficulty: "INTERMEDIATE" },
-];
+import { useState } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import SceneCard from '@/components/SceneCard';
+import { scenes, mockUserStats } from '@/lib/mock-data';
 
-export default function PracticeIndexPage() {
+type DifficultyFilter = 'ALL' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+export default function PracticeLibraryPage() {
+  const [activeFilter, setActiveFilter] = useState<DifficultyFilter>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredScenes = scenes.filter((scene) => {
+    const matchesDifficulty =
+      activeFilter === 'ALL' || scene.difficulty === activeFilter;
+    const matchesSearch =
+      searchQuery === '' ||
+      scene.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      scene.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesDifficulty && matchesSearch;
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur">
-        <div className="container mx-auto flex h-14 items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl">📝</span>
-            <span className="font-bold">英语练功房</span>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold">选择练习场景</h1>
-          <p className="text-muted-foreground mt-2">覆盖生活、学习、职场、编程的全方位场景</p>
-        </div>
+      <main className="flex-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">题库中心</h1>
+            <p className="mt-2 text-gray-600">选择场景，开始你的英语练习之旅</p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-          {SCENES.map((scene) => (
-            <Link
-              key={scene.code}
-              href={`/practice/${scene.code}`}
-              className="bg-card rounded-xl border p-6 hover:border-primary/50 hover:shadow-md transition-all"
-            >
-              <div className="text-3xl mb-3">{scene.icon}</div>
-              <h3 className="font-semibold group-hover:text-primary">{scene.name}</h3>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium mt-2
-                ${scene.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' : ''}
-                ${scene.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800' : ''}
-                ${scene.difficulty === 'ADVANCED' ? 'bg-red-100 text-red-800' : ''}
-              `}>
-                {scene.difficulty === 'BEGINNER' ? 'L1 基础' :
-                 scene.difficulty === 'INTERMEDIATE' ? 'L2 进阶' : 'L3 困难'}
-              </span>
-            </Link>
-          ))}
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-4 mb-8">
+            <div className="flex items-center gap-2 bg-white rounded-xl p-1 border border-gray-200">
+              <button
+                onClick={() => setActiveFilter('ALL')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'ALL'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                全部
+              </button>
+              <button
+                onClick={() => setActiveFilter('BEGINNER')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'BEGINNER'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                基础
+              </button>
+              <button
+                onClick={() => setActiveFilter('INTERMEDIATE')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'INTERMEDIATE'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                进阶
+              </button>
+              <button
+                onClick={() => setActiveFilter('ADVANCED')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'ADVANCED'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                困难
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="搜索场景..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Scene Count */}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span>共 {filteredScenes.length} 个场景</span>
+            </div>
+          </div>
+
+          {/* Scene Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredScenes.map((scene) => (
+              <SceneCard
+                key={scene.id}
+                scene={scene}
+                showHotTag={scene.code === 'it-programming'}
+              />
+            ))}
+          </div>
+
+          {/* Statistics Section */}
+          <div className="mt-16 bg-white rounded-2xl border border-gray-200 p-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">练习数据统计</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center p-4 bg-gray-50 rounded-xl">
+                <div className="text-3xl font-bold text-primary-600 mb-1">
+                  {mockUserStats.totalPracticeCount}
+                </div>
+                <div className="text-sm text-gray-600">总练习次数</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl">
+                <div className="text-3xl font-bold text-green-600 mb-1">
+                  {mockUserStats.completedQuestions}
+                </div>
+                <div className="text-sm text-gray-600">完成题目数</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl">
+                <div className="text-3xl font-bold text-amber-600 mb-1">
+                  {mockUserStats.averageScore}
+                </div>
+                <div className="text-sm text-gray-600">平均得分</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl">
+                <div className="text-3xl font-bold text-purple-600 mb-1">
+                  {mockUserStats.consecutiveDays}
+                </div>
+                <div className="text-sm text-gray-600">连续打卡天数</div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -1,186 +1,201 @@
 import { Router } from "express";
 import { z } from "zod";
+import prisma from "../../db/index.js";
 
 export const scenesRouter = Router();
 
-const SceneCategorySchema = z.enum([
-  "DAILY_LIFE",
-  "TRAVEL",
-  "BUSINESS",
-  "CET",
-  "IELTS",
-  "IT_PROGRAMMING",
-]);
+// Icon mapping for frontend display
+const ICON_MAP: Record<string, { icon: string; iconBg: string }> = {
+  DAILY_LIFE: { icon: "fa-home", iconBg: "from-green-500 to-teal-600" },
+  TRAVEL: { icon: "fa-plane", iconBg: "from-cyan-500 to-blue-600" },
+  BUSINESS: { icon: "fa-briefcase", iconBg: "from-amber-500 to-orange-600" },
+  CET: { icon: "fa-book", iconBg: "from-purple-500 to-pink-600" },
+  IELTS: { icon: "fa-graduation-cap", iconBg: "from-rose-500 to-red-600" },
+  IT_PROGRAMMING: { icon: "fa-code", iconBg: "from-blue-500 to-purple-600" },
+};
 
 const DifficultySchema = z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]);
-
-// Mock data - in production this comes from database
-const SCENES = [
-  {
-    id: "scene_daily",
-    code: "daily",
-    name: "日常口语",
-    description: "日常生活中的实用表达",
-    icon: "🏠",
-    category: "DAILY_LIFE",
-    difficulty: "BEGINNER",
-    isActive: true,
-    sortOrder: 1,
-    questionCount: 15,
-  },
-  {
-    id: "scene_travel",
-    code: "travel",
-    name: "出国旅游",
-    description: "旅行中的常用英语对话",
-    icon: "✈️",
-    category: "TRAVEL",
-    difficulty: "BEGINNER",
-    isActive: true,
-    sortOrder: 2,
-    questionCount: 12,
-  },
-  {
-    id: "scene_business",
-    code: "business",
-    name: "商务场景",
-    description: "职场商务英语表达",
-    icon: "💼",
-    category: "BUSINESS",
-    difficulty: "INTERMEDIATE",
-    isActive: true,
-    sortOrder: 3,
-    questionCount: 20,
-  },
-  {
-    id: "scene_cet",
-    code: "cet",
-    name: "四六级",
-    description: "大学英语四六级备考",
-    icon: "📚",
-    category: "CET",
-    difficulty: "INTERMEDIATE",
-    isActive: true,
-    sortOrder: 4,
-    questionCount: 30,
-  },
-  {
-    id: "scene_ielts",
-    code: "ielts",
-    name: "雅思托福",
-    description: "雅思/托福考试训练",
-    icon: "🎓",
-    category: "IELTS",
-    difficulty: "ADVANCED",
-    isActive: true,
-    sortOrder: 5,
-    questionCount: 25,
-  },
-  {
-    id: "scene_it",
-    code: "it-programming",
-    name: "IT与编程英语",
-    description: "程序员专属技术英语",
-    icon: "💻",
-    category: "IT_PROGRAMMING",
-    difficulty: "INTERMEDIATE",
-    isActive: true,
-    sortOrder: 6,
-    questionCount: 18,
-  },
-];
 
 /**
  * GET /api/scenes
  * Get all active scenes
  */
-scenesRouter.get("/", (req, res) => {
-  const activeScenes = SCENES.filter((s) => s.isActive);
-  return res.json({
-    success: true,
-    data: activeScenes,
-  });
+scenesRouter.get("/", async (req, res) => {
+  try {
+    const scenes = await prisma.scene.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      include: {
+        _count: {
+          select: { questions: true },
+        },
+      },
+    });
+
+    // Transform for frontend
+    const transformedScenes = scenes.map((scene) => ({
+      id: scene.id,
+      code: scene.code,
+      name: scene.name,
+      description: scene.description || "",
+      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      category: scene.category,
+      difficulty: scene.difficulty,
+      questionCount: scene._count.questions,
+      tags: scene.category === "IT_PROGRAMMING" ? ["热门"] : [],
+    }));
+
+    return res.json({
+      success: true,
+      data: transformedScenes,
+    });
+  } catch (error) {
+    console.error("Error fetching scenes:", error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "获取场景列表失败",
+      },
+    });
+  }
 });
 
 /**
  * GET /api/scenes/:code
  * Get scene by code
  */
-scenesRouter.get("/:code", (req, res) => {
+scenesRouter.get("/:code", async (req, res) => {
   const { code } = req.params;
-  const scene = SCENES.find((s) => s.code === code);
 
-  if (!scene) {
-    return res.status(404).json({
+  try {
+    const scene = await prisma.scene.findUnique({
+      where: { code },
+      include: {
+        _count: {
+          select: { questions: true },
+        },
+      },
+    });
+
+    if (!scene) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: "NOT_FOUND",
+          message: `场景 ${code} 不存在`,
+        },
+      });
+    }
+
+    const transformedScene = {
+      id: scene.id,
+      code: scene.code,
+      name: scene.name,
+      description: scene.description || "",
+      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      category: scene.category,
+      difficulty: scene.difficulty,
+      questionCount: scene._count.questions,
+    };
+
+    return res.json({
+      success: true,
+      data: transformedScene,
+    });
+  } catch (error) {
+    console.error("Error fetching scene:", error);
+    return res.status(500).json({
       success: false,
       error: {
-        code: "NOT_FOUND",
-        message: `场景 ${code} 不存在`,
+        code: "INTERNAL_ERROR",
+        message: "获取场景详情失败",
       },
     });
   }
-
-  return res.json({
-    success: true,
-    data: scene,
-  });
 });
 
 /**
  * GET /api/scenes/:code/questions
  * Get questions for a scene
  */
-scenesRouter.get("/:code/questions", (req, res) => {
+scenesRouter.get("/:code/questions", async (req, res) => {
   const { code } = req.params;
   const { limit = "10", difficulty } = req.query;
 
-  const scene = SCENES.find((s) => s.code === code);
-  if (!scene) {
-    return res.status(404).json({
+  try {
+    // First get the scene
+    const scene = await prisma.scene.findUnique({
+      where: { code },
+    });
+
+    if (!scene) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: "NOT_FOUND",
+          message: `场景 ${code} 不存在`,
+        },
+      });
+    }
+
+    // Build where clause
+    const whereClause: any = {
+      sceneId: scene.id,
+      isActive: true,
+    };
+
+    if (difficulty && DifficultySchema.safeParse(difficulty).success) {
+      whereClause.difficulty = difficulty;
+    }
+
+    // Get questions
+    const questions = await prisma.question.findMany({
+      where: whereClause,
+      take: parseInt(limit as string, 10),
+      orderBy: { createdAt: "asc" },
+    });
+
+    // Transform for frontend
+    const transformedQuestions = questions.map((q) => ({
+      id: q.id,
+      type: q.type,
+      prompt: q.prompt,
+      hint: q.hint,
+      difficulty: q.difficulty,
+      topic: q.tags && q.tags.length > 0 ? q.tags[0] : undefined,
+    }));
+
+    // Get scene info for response
+    const sceneInfo = {
+      id: scene.id,
+      code: scene.code,
+      name: scene.name,
+      description: scene.description || "",
+      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      category: scene.category,
+      difficulty: scene.difficulty,
+    };
+
+    return res.json({
+      success: true,
+      data: {
+        scene: sceneInfo,
+        questions: transformedQuestions,
+        total: transformedQuestions.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    return res.status(500).json({
       success: false,
       error: {
-        code: "NOT_FOUND",
-        message: `场景 ${code} 不存在`,
+        code: "INTERNAL_ERROR",
+        message: "获取题目列表失败",
       },
     });
   }
-
-  // Mock questions - in production come from database
-  const questions = [
-    {
-      id: "q1",
-      prompt: "部署代码到生产环境",
-      hint: "使用硅谷工程师常用的表达",
-      difficulty: "INTERMEDIATE",
-      tags: ["deployment", "production"],
-    },
-    {
-      id: "q2",
-      prompt: "调用这个接口获取用户数据",
-      hint: "考虑用更专业的技术术语",
-      difficulty: "INTERMEDIATE",
-      tags: ["api", "fetch"],
-    },
-    {
-      id: "q3",
-      prompt: "我们需要进行一次代码审查",
-      hint: "Code Review是常见的缩写形式",
-      difficulty: "INTERMEDIATE",
-      tags: ["code-review", "collaboration"],
-    },
-  ];
-
-  let filtered = questions;
-  if (difficulty) {
-    filtered = filtered.filter((q) => q.difficulty === difficulty);
-  }
-
-  return res.json({
-    success: true,
-    data: {
-      scene,
-      questions: filtered.slice(0, parseInt(limit as string, 10)),
-      total: filtered.length,
-    },
-  });
 });

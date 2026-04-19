@@ -1,12 +1,39 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { EvaluationResult, AIFallbackResponse } from "@anthropic-ai/evaluation";
-import { buildEvaluationPrompt, IT_PROGRAMMING_PROMPT_CONFIG } from "../prompts/it-programming.js";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+import { buildEvaluationPrompt, IT_PROGRAMMING_PROMPT_CONFIG } from "../../prompts/it-programming.js";
 
 const AI_TIMEOUT_MS = 15000; // 15 seconds
+
+interface EvaluationResult {
+  total_score: number;
+  dimensions: {
+    name: string;
+    score: number;
+    detail: string;
+  }[];
+  feedback: string;
+  better_expressions: {
+    user_expression: string;
+    better_version: string;
+    reason: string;
+  }[];
+  grammar_issues?: {
+    original: string;
+    corrected: string;
+    explanation: string;
+  }[];
+}
+
+interface AIFallbackResponse {
+  total_score: number;
+  dimensions: Array<{ name: string; score: number; detail: string }>;
+  feedback: string;
+  better_expressions: Array<{
+    user_expression: string;
+    better_version: string;
+    reason: string;
+  }>;
+  is_fallback: true;
+  fallback_reason: "AI_TIMEOUT" | "AI_ERROR" | "RATE_LIMIT";
+}
 
 interface EvaluateParams {
   questionType: string;
@@ -15,30 +42,46 @@ interface EvaluateParams {
 }
 
 /**
- * Call AI with timeout handling and fallback
+ * Call Doubao API with timeout handling
  */
-async function callAIWithTimeout(
+async function callDoubaoWithTimeout(
   prompt: string
-): Promise<Anthropic.Message | null> {
+): Promise<any | null> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
 
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-7",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+    const response = await fetch(process.env.DOUBAO_ENDPOINT || "https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.DOUBAO_API_KEY || ""}`,
+      },
+      body: JSON.stringify({
+        model: process.env.DOUBAO_MODEL || "doubao-pro-32k",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 1024,
+        temperature: 0.7,
+      }),
+      signal: controller.signal,
     });
+
     clearTimeout(timeoutId);
-    return message;
+
+    if (!response.ok) {
+      throw new Error(`Doubao API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     clearTimeout(timeoutId);
-    if (error.name === "AbortError" || error.code === "timeout") {
+    if (error.name === "AbortError") {
       return null; // Timeout
     }
     throw error;
@@ -130,19 +173,17 @@ export async function evaluateTranslation(params: EvaluateParams): Promise<Evalu
   const prompt = buildEvaluationPrompt(questionType, userInput, sceneCode);
 
   try {
-    // Try to call AI
-    const message = await callAIWithTimeout(prompt);
+    // Call Doubao API
+    const data = await callDoubaoWithTimeout(prompt);
 
-    if (!message) {
+    if (!data) {
       // Timeout occurred
       console.warn("AI evaluation timeout");
       return getFallbackResponse("AI_TIMEOUT");
     }
 
-    // Parse response
-    const responseText = message.content[0].type === "text"
-      ? message.content[0].text
-      : "";
+    // Extract response text from Doubao format
+    const responseText = data.choices?.[0]?.message?.content || "";
 
     return parseAIResponse(responseText);
   } catch (error: any) {

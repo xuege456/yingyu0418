@@ -22,5 +22,8 @@
   "packageManager": "npm@10.0.0",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.0"
   }
 }

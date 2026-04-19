@@ -16,7 +16,7 @@ english-training-room/
 │   └── api/           # Express 后端
 ├── packages/
 │   └── types/         # 共享 TypeScript 类型
-├── docker-compose.yml # PostgreSQL + Redis
+├── docker-compose.yml # Redis (Neon for PostgreSQL)
 ├── turbo.json
 └── package.json
 ```
@@ -47,7 +47,7 @@ english-training-room/
 # 安装依赖
 npm install
 
-# 启动基础设施 (PostgreSQL + Redis)
+# 启动本地基础设施 (仅 Redis，数据库使用 Neon)
 docker-compose up -d
 
 # 运行开发服务器

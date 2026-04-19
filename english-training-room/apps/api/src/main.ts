@@ -53,4 +53,10 @@ app.use("/api/evaluation", limiter, evaluationRouter); // Apply rate limiter to 
 // Error handling
 app.use(errorHandler);
 
+// Start server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 API server running on http://localhost:${PORT}`);
+});
+
 export default app;
