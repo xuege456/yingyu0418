@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/AuthContext';
 
 const gradientBg = 'bg-gradient-to-r from-blue-600 to-purple-600';
 
@@ -51,6 +52,7 @@ export default function PracticePageClient({
   initialQuestions = [],
 }: PracticePageClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [scene, setScene] = useState<Scene | null>(null);
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -257,9 +259,17 @@ export default function PracticePageClient({
                   3
                 </span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                李
-              </div>
+              {user ? (
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                  {user.nickname?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'}
+                </div>
+              ) : (
+                <Link href="/login">
+                  <div className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm hover:bg-gray-200">
+                    登录
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         </div>

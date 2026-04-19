@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const gradientBg = 'bg-gradient-to-r from-blue-600 to-purple-600';
 
@@ -18,7 +18,8 @@ export default function Header() {
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
-    router.push('/');
+    // Force refresh to ensure state is synced
+    window.location.href = '/';
   };
 
   const getAvatarText = () => {
@@ -27,6 +28,15 @@ export default function Header() {
     if (user.email) return user.email[0].toUpperCase();
     return '?';
   };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShowUserMenu(false);
+    if (showUserMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showUserMenu]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-gray-200">
@@ -79,7 +89,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Notification Bell */}
             <Link href="/notifications" className="relative">
-              <i className="fas fa-bell text-gray-500 hover:text-gray-700 cursor-pointer" />
+              <i className="fas fa-bell text-gray-500 hover:text-gray-700 cursor-pointer text-lg" />
               {user && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                   3
@@ -91,49 +101,68 @@ export default function Header() {
             {!isLoading && (
               <div className="relative">
                 {user ? (
-                  <button onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+                  // Logged in - show avatar with dropdown
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUserMenu(!showUserMenu);
+                    }}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
                       {getAvatarText()}
                     </div>
+                    <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+                      {user.nickname || user.email?.split('@')[0] || '用户'}
+                    </span>
+                    <i className="fas fa-chevron-down text-xs text-gray-400" />
                   </button>
                 ) : (
-                  <Link href="/login" className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                      <i className="fas fa-user text-sm" />
-                    </div>
+                  // Not logged in - show login button
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium hover:shadow-md transition-all"
+                  >
+                    <i className="fas fa-user text-xs" />
+                    <span>登录/注册</span>
                   </Link>
                 )}
 
                 {/* User dropdown menu */}
                 {showUserMenu && user && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
+                  <div
+                    className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="px-4 py-3 border-b border-gray-100">
                       <div className="font-medium text-gray-900">{user.nickname || '用户'}</div>
-                      <div className="text-sm text-gray-500">{user.email || user.phone}</div>
+                      <div className="text-sm text-gray-500 truncate">{user.email || user.phone || '未设置邮箱'}</div>
                     </div>
                     <Link
                       href="/notifications"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      <i className="fas fa-bell mr-2" />
+                      <i className="fas fa-bell w-5 text-gray-400" />
                       我的通知
                     </Link>
                     <Link
                       href="/progress"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      <i className="fas fa-chart-line mr-2" />
+                      <i className="fas fa-chart-line w-5 text-gray-400" />
                       学习进度
                     </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
-                    >
-                      <i className="fas fa-sign-out-alt mr-2" />
-                      退出登录
-                    </button>
+                    <div className="border-t border-gray-100 mt-2 pt-2">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50"
+                      >
+                        <i className="fas fa-sign-out-alt w-5" />
+                        退出登录
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

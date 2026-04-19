@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/AuthContext';
 
 const gradientBg = 'bg-gradient-to-r from-blue-600 to-purple-600';
 
@@ -32,6 +33,7 @@ interface Question {
 }
 
 export default function ResultPage() {
+  const { user } = useAuth();
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
   const [userInput, setUserInput] = useState<string>('');
@@ -112,9 +114,17 @@ export default function ResultPage() {
                   连续练习: <strong className="text-gray-900">5</strong> 天
                 </span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
-                李
-              </div>
+              {user ? (
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                  {user.nickname?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'}
+                </div>
+              ) : (
+                <Link href="/login">
+                  <div className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm hover:bg-gray-200">
+                    登录
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         </div>

@@ -1,26 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SceneCard from '@/components/SceneCard';
-import { scenes, mockUserStats } from '@/lib/mock-data';
+
+interface Scene {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  icon: string;
+  iconBg: string;
+  category: string;
+  difficulty: string;
+  questionCount: number;
+  tags: string[];
+}
 
 type DifficultyFilter = 'ALL' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
 export default function PracticeLibraryPage() {
+  const [scenes, setScenes] = useState<Scene[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<DifficultyFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
+  useEffect(() => {
+    fetchScenes();
+  }, []);
+
+  const fetchScenes = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/scenes');
+      const data = await res.json();
+      if (data.success) {
+        setScenes(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch scenes:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filteredScenes = scenes.filter((scene) => {
-    const matchesDifficulty =
-      activeFilter === 'ALL' || scene.difficulty === activeFilter;
+    const matchesDifficulty = activeFilter === 'ALL' || scene.difficulty === activeFilter;
     const matchesSearch =
       searchQuery === '' ||
       scene.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       scene.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesDifficulty && matchesSearch;
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-4">
+              <i className="fas fa-spinner fa-spin text-primary-600 text-2xl" />
+            </div>
+            <p className="text-gray-600">加载中...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -110,36 +159,14 @@ export default function PracticeLibraryPage() {
             ))}
           </div>
 
-          {/* Statistics Section */}
-          <div className="mt-16 bg-white rounded-2xl border border-gray-200 p-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">练习数据统计</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-3xl font-bold text-primary-600 mb-1">
-                  {mockUserStats.totalPracticeCount}
-                </div>
-                <div className="text-sm text-gray-600">总练习次数</div>
+          {filteredScenes.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-search text-gray-400 text-2xl" />
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-3xl font-bold text-green-600 mb-1">
-                  {mockUserStats.completedQuestions}
-                </div>
-                <div className="text-sm text-gray-600">完成题目数</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-3xl font-bold text-amber-600 mb-1">
-                  {mockUserStats.averageScore}
-                </div>
-                <div className="text-sm text-gray-600">平均得分</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-3xl font-bold text-purple-600 mb-1">
-                  {mockUserStats.consecutiveDays}
-                </div>
-                <div className="text-sm text-gray-600">连续打卡天数</div>
-              </div>
+              <p className="text-gray-500">没有找到匹配的场景</p>
             </div>
-          </div>
+          )}
         </div>
       </main>
 
