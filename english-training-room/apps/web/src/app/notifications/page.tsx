@@ -29,7 +29,7 @@ export default function NotificationsPage() {
       id: 3,
       type: 'system',
       title: '系统通知',
-      content: '欢迎来到英语练功房，开始你的学习之旅吧！',
+      content: '欢迎来到AI编程练功房，开始你的学习之旅吧！',
       time: '3天前',
       unread: false,
     },
@@ -187,7 +187,7 @@ export default function NotificationsPage() {
               <div className={`w-7 h-7 rounded-lg ${gradientBg} flex items-center justify-center`}>
                 <i className="fas fa-language text-white text-xs" />
               </div>
-              <span>英语练功房</span>
+              <span>AI编程练功房</span>
             </div>
             <p>© 2024 English Training Room</p>
           </div>

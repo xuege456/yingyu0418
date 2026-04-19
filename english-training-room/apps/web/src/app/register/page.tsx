@@ -82,7 +82,7 @@ export default function RegisterPage() {
             <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
               <i className="fas fa-language text-2xl" />
             </div>
-            <span className="font-bold text-2xl">英语练功房</span>
+            <span className="font-bold text-2xl">AI编程练功房</span>
           </Link>
 
           <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
@@ -126,7 +126,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="absolute bottom-8 left-16 text-sm text-blue-200">
-          © 2024 英语练功房. All rights reserved.
+          © 2024 AI编程练功房. All rights reserved.
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function RegisterPage() {
             <div className={`w-10 h-10 rounded-xl ${gradientBg} flex items-center justify-center`}>
               <i className="fas fa-language text-white text-lg" />
             </div>
-            <span className="font-bold text-xl">英语练功房</span>
+            <span className="font-bold text-xl">AI编程练功房</span>
           </div>
 
           <div className="text-center mb-8">

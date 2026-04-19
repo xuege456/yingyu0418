@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - AI编程练功房</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .sidebar-item:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-item.active { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 gradient-bg text-white flex flex-col">
+        <div class="p-6 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-language text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg">AI编程练功房</span>
+                    <div class="text-xs text-blue-200">管理后台</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-6">
+            <div class="sidebar-item active px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('dashboard')">
+                <i class="fas fa-chart-pie w-5"></i>
+                <span>数据概览</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('scenes')">
+                <i class="fas fa-layer-group w-5"></i>
+                <span>场景管理</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('questions')">
+                <i class="fas fa-list-question w-5"></i>
+                <span>题目管理</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('import')">
+                <i class="fas fa-file-import w-5"></i>
+                <span>题目导入</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('users')">
+                <i class="fas fa-users w-5"></i>
+                <span>用户管理</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('orders')">
+                <i class="fas fa-receipt w-5"></i>
+                <span>订单管理</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('packages')">
+                <i class="fas fa-crown w-5"></i>
+                <span>订阅套餐</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer mb-1" onclick="showModule('codes')">
+                <i class="fas fa-ticket-alt w-5"></i>
+                <span>兑换码</span>
+            </div>
+            <div class="sidebar-item px-6 py-3 rounded-lg mx-3 flex items-center gap-3 cursor-pointer" onclick="showModule('logs')">
+                <i class="fas fa-history w-5"></i>
+                <span>操作日志</span>
+            </div>
+        </nav>
+
+        <div class="p-6 border-t border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="font-medium">管理员</div>
+                    <div class="text-xs text-blue-200">admin@example.com</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900" id="pageTitle">数据概览</h1>
+                <p class="text-sm text-gray-500" id="pageSubtitle">查看平台整体数据统计</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="p-2 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 p-8 overflow-auto">
+            <!-- Dashboard Module -->
+            <div id="module-dashboard" class="module-content">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-database text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="text-sm text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>12%</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900">1,284</div>
+                        <div class="text-sm text-gray-500">总题目数</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-users text-green-600 text-xl"></i>
+                            </div>
+                            <span class="text-sm text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>8%</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900">3,562</div>
+                        <div class="text-sm text-gray-500">注册用户</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                                <i class="fas fa-shopping-cart text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="text-sm text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>23%</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900">¥ 45,280</div>
+                        <div class="text-sm text-gray-500">总收入</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
+                                <i class="fas fa-star text-amber-600 text-xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-600 font-medium">本月</span>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900">156</div>
+                        <div class="text-sm text-gray-500">VIP订单</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">练习次数趋势</h3>
+                        <div class="h-64 flex items-center justify-center text-gray-400">
+                            <div class="text-center">
+                                <i class="fas fa-chart-line text-4xl mb-2"></i>
+                                <p>图表区域</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">场景练习分布</h3>
+                        <div class="h-64 flex items-center justify-center text-gray-400">
+                            <div class="text-center">
+                                <i class="fas fa-chart-pie text-4xl mb-2"></i>
+                                <p>图表区域</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">最近练习记录</h3>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-sm text-gray-500 border-b border-gray-100">
+                                <th class="pb-3 font-medium">用户</th>
+                                <th class="pb-3 font-medium">场景</th>
+                                <th class="pb-3 font-medium">分数</th>
+                                <th class="pb-3 font-medium">时间</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-gray-50">
+                                <td class="py-3">张三</td>
+                                <td class="py-3"><span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">数据库指令</span></td>
+                                <td class="py-3"><span class="text-green-600 font-medium">92分</span></td>
+                                <td class="py-3 text-gray-500">2024-01-15 14:30</td>
+                            </tr>
+                            <tr class="border-b border-gray-50">
+                                <td class="py-3">李四</td>
+                                <td class="py-3"><span class="px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-xs">Next.js基础</span></td>
+                                <td class="py-3"><span class="text-green-600 font-medium">88分</span></td>
+                                <td class="py-3 text-gray-500">2024-01-15 14:25</td>
+                            </tr>
+                            <tr class="border-b border-gray-50">
+                                <td class="py-3">王五</td>
+                                <td class="py-3"><span class="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs">Cloud Code</span></td>
+                                <td class="py-3"><span class="text-yellow-600 font-medium">75分</span></td>
+                                <td class="py-3 text-gray-500">2024-01-15 14:20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Scenes Module -->
+            <div id="module-scenes" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索场景..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部难度</option>
+                            <option>L1 基础</option>
+                            <option>L2 进阶</option>
+                            <option>L3 困难</option>
+                        </select>
+                    </div>
+                    <button onclick="openModal('sceneModal')" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2">
+                        <i class="fas fa-plus"></i>添加场景
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium">场景名称</th>
+                                <th class="px-6 py-4 font-medium">难度</th>
+                                <th class="px-6 py-4 font-medium">题目数</th>
+                                <th class="px-6 py-4 font-medium">练习次数</th>
+                                <th class="px-6 py-4 font-medium">状态</th>
+                                <th class="px-6 py-4 font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                            <i class="fas fa-database text-blue-600"></i>
+                                        </div>
+                                        <span class="font-medium">数据库指令答题</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1 基础</span></td>
+                                <td class="px-6 py-4">156</td>
+                                <td class="px-6 py-4">2,341</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center">
+                                            <i class="fas fa-bolt text-cyan-600"></i>
+                                        </div>
+                                        <span class="font-medium">数据库快捷指令速查</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1 基础</span></td>
+                                <td class="px-6 py-4">98</td>
+                                <td class="px-6 py-4">1,876</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                            <i class="fab fa-node-js text-emerald-600"></i>
+                                        </div>
+                                        <span class="font-medium">Next.js 基础语法答题</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1 基础</span></td>
+                                <td class="px-6 py-4">124</td>
+                                <td class="px-6 py-4">1,654</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-lime-100 flex items-center justify-center">
+                                            <i class="fas fa-keyboard text-lime-600"></i>
+                                        </div>
+                                        <span class="font-medium">Next.js 高频关键字</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">L2 进阶</span></td>
+                                <td class="px-6 py-4">86</td>
+                                <td class="px-6 py-4">1,234</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                                            <i class="fas fa-cloud text-purple-600"></i>
+                                        </div>
+                                        <span class="font-medium">Cloud Code 指令答题</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">L2 进阶</span></td>
+                                <td class="px-6 py-4">112</td>
+                                <td class="px-6 py-4">987</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">已禁用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center">
+                                            <i class="fas fa-robot text-pink-600"></i>
+                                        </div>
+                                        <span class="font-medium">AI 编程提示词</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">L2 进阶</span></td>
+                                <td class="px-6 py-4">98</td>
+                                <td class="px-6 py-4">756</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                                            <i class="fas fa-code text-amber-600"></i>
+                                        </div>
+                                        <span class="font-medium">编程专业英语</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1 基础</span></td>
+                                <td class="px-6 py-4">145</td>
+                                <td class="px-6 py-4">1,234</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center">
+                                            <i class="fas fa-question-circle text-sky-600"></i>
+                                        </div>
+                                        <span class="font-medium">Cloud Code 开发命令</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">L2 进阶</span></td>
+                                <td class="px-6 py-4">78</td>
+                                <td class="px-6 py-4">543</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+                                            <i class="fas fa-rocket text-red-600"></i>
+                                        </div>
+                                        <span class="font-medium">开发进阶篇</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">L3 困难</span></td>
+                                <td class="px-6 py-4">65</td>
+                                <td class="px-6 py-4">321</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">每页显示</span>
+                        <select class="px-3 py-1 rounded border border-gray-200 outline-none text-sm" onchange="changePageSize('scenes', this.value)">
+                            <option value="5">5条</option>
+                            <option value="10" selected>10条</option>
+                            <option value="20">20条</option>
+                        </select>
+                        <span class="text-sm text-gray-500">共 9 条</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50" onclick="changePage('scenes', 'prev')">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50" onclick="changePage('scenes', 2)">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50" onclick="changePage('scenes', 'next')">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Module -->
+            <div id="module-questions" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索题目内容..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部场景</option>
+                            <option>数据库指令答题</option>
+                            <option>数据库快捷指令速查</option>
+                            <option>Next.js 基础语法答题</option>
+                            <option>Next.js 高频关键字</option>
+                            <option>Cloud Code 指令答题</option>
+                            <option>AI 编程提示词</option>
+                            <option>编程专业英语</option>
+                            <option>Cloud Code 开发命令</option>
+                            <option>开发进阶篇</option>
+                        </select>
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部类型</option>
+                            <option>拼写题</option>
+                            <option>选择题</option>
+                            <option>填空题</option>
+                            <option>问答题</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                            <i class="fas fa-file-export"></i>导出
+                        </button>
+                        <button onclick="openModal('questionModal')" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2">
+                            <i class="fas fa-plus"></i>添加题目
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium"><input type="checkbox" class="rounded"></th>
+                                <th class="px-6 py-4 font-medium">题目内容</th>
+                                <th class="px-6 py-4 font-medium">场景</th>
+                                <th class="px-6 py-4 font-medium">类型</th>
+                                <th class="px-6 py-4 font-medium">难度</th>
+                                <th class="px-6 py-4 font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4"><input type="checkbox" class="rounded"></td>
+                                <td class="px-6 py-4 max-w-md truncate">请拼写：查询所有用户</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">数据库</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs">拼写题</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4"><input type="checkbox" class="rounded"></td>
+                                <td class="px-6 py-4 max-w-md truncate">npm run dev 的作用是？</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs">Next.js</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-xs">选择题</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">L1</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4"><input type="checkbox" class="rounded"></td>
+                                <td class="px-6 py-4 max-w-md truncate">Cloud Code 部署命令是 ___</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-xs">Cloud Code</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-pink-100 text-pink-700 text-xs">填空题</span></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">L2</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm text-gray-500">已选择 2 项</div>
+                        <button class="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-gray-50">批量删除</button>
+                        <button class="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-gray-50">移动到场景</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Module -->
+            <div id="module-import" class="module-content hidden">
+                <!-- Top Actions -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-gray-900">题目导入导出</h2>
+                    <div class="flex items-center gap-3">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none" id="exportSceneSelect">
+                            <option value="">全部场景</option>
+                            <option value="1">数据库指令答题</option>
+                            <option value="2">数据库快捷指令速查</option>
+                            <option value="3">Next.js 基础语法答题</option>
+                            <option value="4">Next.js 高频关键字</option>
+                            <option value="5">Cloud Code 指令答题</option>
+                            <option value="6">AI 编程提示词</option>
+                            <option value="7">编程专业英语</option>
+                            <option value="8">Cloud Code 开发命令</option>
+                            <option value="9">开发进阶篇</option>
+                        </select>
+                        <button onclick="exportQuestions()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2">
+                            <i class="fas fa-file-export"></i>批量导出
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Template Download -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-download mr-2 text-primary-600"></i>示例模板下载</h3>
+                        <p class="text-sm text-gray-500 mb-4">下载各格式导入模板，了解正确的文件格式</p>
+
+                        <div class="space-y-3">
+                            <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-file-excel text-2xl text-green-600"></i>
+                                    <div>
+                                        <div class="font-medium text-gray-900">Excel 模板</div>
+                                        <div class="text-xs text-gray-500">.xlsx 格式</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-download text-gray-400"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-file-csv text-2xl text-blue-600"></i>
+                                    <div>
+                                        <div class="font-medium text-gray-900">CSV 模板</div>
+                                        <div class="text-xs text-gray-500">.csv UTF-8编码</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-download text-gray-400"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-file-code text-2xl text-purple-600"></i>
+                                    <div>
+                                        <div class="font-medium text-gray-900">JSON 模板</div>
+                                        <div class="text-xs text-gray-500">.json 格式</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-download text-gray-400"></i>
+                            </a>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="text-sm font-medium text-gray-700 mb-2">字段说明</div>
+                            <div class="text-xs text-gray-600 space-y-1">
+                                <div><code class="bg-gray-200 px-1 rounded">content</code> - 题目内容</div>
+                                <div><code class="bg-gray-200 px-1 rounded">type</code> - 题目类型（1拼写/2选择/3填空/4问答）</div>
+                                <div><code class="bg-gray-200 px-1 rounded">sceneId</code> - 场景ID（见下方场景ID对照表）</div>
+                                <div><code class="bg-gray-200 px-1 rounded">answer</code> - 正确答案</div>
+                                <div><code class="bg-gray-200 px-1 rounded">analysis</code> - 答案解析（可选）</div>
+                                <div><code class="bg-gray-200 px-1 rounded">level</code> - 难度（1基础/2进阶/3困难）</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batch Import by Scene -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-upload mr-2 text-primary-600"></i>批量导入</h3>
+                        <p class="text-sm text-gray-500 mb-4">选择场景后导入题目，可用于更新指定场景题库</p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">选择场景</label>
+                                <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                                    <option value="">全部场景</option>
+                                    <option value="1">数据库指令答题</option>
+                                    <option value="2">数据库快捷指令速查</option>
+                                    <option value="3">Next.js 基础语法答题</option>
+                                    <option value="4">Next.js 高频关键字</option>
+                                    <option value="5">Cloud Code 指令答题</option>
+                                    <option value="6">AI 编程提示词</option>
+                                    <option value="7">编程专业英语</option>
+                                    <option value="8">Cloud Code 开发命令</option>
+                                    <option value="9">开发进阶篇</option>
+                                </select>
+                            </div>
+
+                            <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer" onclick="document.getElementById('batchFileInput').click()">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                                <div class="font-medium text-gray-900 mb-1">点击或拖拽文件到此处</div>
+                                <div class="text-sm text-gray-500">支持 Excel、CSV、JSON 格式</div>
+                                <input type="file" id="batchFileInput" class="hidden" accept=".xlsx,.xls,.csv,.json">
+                            </div>
+
+                            <div class="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                                <i class="fas fa-info-circle text-blue-600"></i>
+                                <span>导入将覆盖现有题目，请谨慎操作</span>
+                            </div>
+
+                            <button class="w-full py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                                确认导入
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Import Preview -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-eye mr-2 text-primary-600"></i>导入预览</h3>
+                        <p class="text-sm text-gray-500 mb-4">导入前的数据预览，确认无误后确认导入</p>
+
+                        <div class="border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr class="text-left">
+                                        <th class="px-3 py-2 font-medium">题目内容</th>
+                                        <th class="px-3 py-2 font-medium">类型</th>
+                                        <th class="px-3 py-2 font-medium">场景</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td class="px-3 py-2 max-w-[150px] truncate">查询所有用户数据</td>
+                                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs">拼写题</span></td>
+                                        <td class="px-3 py-2 text-xs">数据库指令</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 max-w-[150px] truncate">npm install 的作用</td>
+                                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 text-xs">选择题</span></td>
+                                        <td class="px-3 py-2 text-xs">Next.js 基础</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 max-w-[150px] truncate">Cloud Code 部署命令</td>
+                                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded bg-pink-100 text-pink-700 text-xs">填空题</span></td>
+                                        <td class="px-3 py-2 text-xs">Cloud Code</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 max-w-[150px] truncate truncate">编写一个 SELECT 语句</td>
+                                        <td class="px-3 py-2"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs">拼写题</span></td>
+                                        <td class="px-3 py-2 text-xs">数据库指令</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Import Stats -->
+                        <div class="mt-4 grid grid-cols-3 gap-3">
+                            <div class="text-center p-2 bg-green-50 rounded-lg">
+                                <div class="text-xl font-bold text-green-600">150</div>
+                                <div class="text-xs text-gray-600">成功</div>
+                            </div>
+                            <div class="text-center p-2 bg-yellow-50 rounded-lg">
+                                <div class="text-xl font-bold text-yellow-600">5</div>
+                                <div class="text-xs text-gray-600">警告</div>
+                            </div>
+                            <div class="text-center p-2 bg-red-50 rounded-lg">
+                                <div class="text-xl font-bold text-red-600">2</div>
+                                <div class="text-xs text-gray-600">失败</div>
+                            </div>
+                        </div>
+
+                        <button onclick="confirmImport()" class="w-full mt-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                            确认导入
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scene ID Reference -->
+                <div class="mt-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-list mr-2 text-primary-600"></i>场景ID对照表</h3>
+                    <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4">
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">1</div>
+                            <div class="text-xs text-gray-600 mt-1">数据库指令答题</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">2</div>
+                            <div class="text-xs text-gray-600 mt-1">数据库快捷指令</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">3</div>
+                            <div class="text-xs text-gray-600 mt-1">Next.js 基础</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">4</div>
+                            <div class="text-xs text-gray-600 mt-1">Next.js 关键字</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">5</div>
+                            <div class="text-xs text-gray-600 mt-1">Cloud Code 指令</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">6</div>
+                            <div class="text-xs text-gray-600 mt-1">AI 编程提示词</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">7</div>
+                            <div class="text-xs text-gray-600 mt-1">编程专业英语</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">8</div>
+                            <div class="text-xs text-gray-600 mt-1">Cloud Code 命令</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">9</div>
+                            <div class="text-xs text-gray-600 mt-1">开发进阶篇</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Module -->
+            <div id="module-users" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索用户..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部类型</option>
+                            <option>普通用户</option>
+                            <option>VIP用户</option>
+                        </select>
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部状态</option>
+                            <option>已启用</option>
+                            <option>已禁用</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium">用户</th>
+                                <th class="px-6 py-4 font-medium">邮箱</th>
+                                <th class="px-6 py-4 font-medium">VIP状态</th>
+                                <th class="px-6 py-4 font-medium">练习次数</th>
+                                <th class="px-6 py-4 font-medium">注册时间</th>
+                                <th class="px-6 py-4 font-medium">状态</th>
+                                <th class="px-6 py-4 font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">张</div>
+                                        <span class="font-medium">张三</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">zhangsan@example.com</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs"><i class="fas fa-crown mr-1"></i>VIP</span></td>
+                                <td class="px-6 py-4">256</td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-01</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-medium">李</div>
+                                        <span class="font-medium">李四</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">lisi@example.com</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs">普通</span></td>
+                                <td class="px-6 py-4">128</td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-05</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已启用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-medium">王</div>
+                                        <span class="font-medium">王五</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">wangwu@example.com</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-xs"><i class="fas fa-crown mr-1"></i>VIP</span></td>
+                                <td class="px-6 py-4">89</td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-10</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">已禁用</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button class="text-green-600 hover:text-green-800"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">每页显示</span>
+                        <select class="px-3 py-1 rounded border border-gray-200 outline-none text-sm" onchange="changePageSize('users', this.value)">
+                            <option value="5">5条</option>
+                            <option value="10" selected>10条</option>
+                            <option value="20">20条</option>
+                        </select>
+                        <span class="text-sm text-gray-500">共 3,562 条</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Module -->
+            <div id="module-orders" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索订单号/用户..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部状态</option>
+                            <option>待支付</option>
+                            <option>已支付</option>
+                            <option>已取消</option>
+                            <option>已退款</option>
+                        </select>
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部类型</option>
+                            <option>月卡</option>
+                            <option>季卡</option>
+                            <option>年卡</option>
+                        </select>
+                    </div>
+                    <button class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <i class="fas fa-file-export"></i>导出
+                    </button>
+                </div>
+
+                <!-- Order Stats -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                        <div class="text-sm text-gray-500">待支付</div>
+                        <div class="text-2xl font-bold text-yellow-600">12</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                        <div class="text-sm text-gray-500">已支付</div>
+                        <div class="text-2xl font-bold text-green-600">1,456</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                        <div class="text-sm text-gray-500">已取消</div>
+                        <div class="text-2xl font-bold text-gray-600">89</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                        <div class="text-sm text-gray-500">已退款</div>
+                        <div class="text-2xl font-bold text-red-600">23</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium">订单号</th>
+                                <th class="px-6 py-4 font-medium">用户</th>
+                                <th class="px-6 py-4 font-medium">商品</th>
+                                <th class="px-6 py-4 font-medium">金额</th>
+                                <th class="px-6 py-4 font-medium">状态</th>
+                                <th class="px-6 py-4 font-medium">时间</th>
+                                <th class="px-6 py-4 font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-sm">ORD202401150001</td>
+                                <td class="px-6 py-4">张三</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs">年卡 VIP</span></td>
+                                <td class="px-6 py-4 font-medium">¥299</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">已支付</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 14:30</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-eye"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-undo"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-sm">ORD202401150002</td>
+                                <td class="px-6 py-4">李四</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">月卡 VIP</span></td>
+                                <td class="px-6 py-4 font-medium">¥29</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs">待支付</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 15:20</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-eye"></i></button>
+                                    <button class="text-gray-400"><i class="fas fa-undo"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-mono text-sm">ORD202401140003</td>
+                                <td class="px-6 py-4">王五</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-cyan-100 text-cyan-700 text-xs">季卡 VIP</span></td>
+                                <td class="px-6 py-4 font-medium">¥79</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">已退款</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-14 10:00</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-eye"></i></button>
+                                    <button class="text-gray-400"><i class="fas fa-undo"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">每页显示</span>
+                        <select class="px-3 py-1 rounded border border-gray-200 outline-none text-sm" onchange="changePageSize('orders', this.value)">
+                            <option value="5">5条</option>
+                            <option value="10" selected>10条</option>
+                            <option value="20">20条</option>
+                        </select>
+                        <span class="text-sm text-gray-500">共 1,580 条</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Module -->
+            <div id="module-logs" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索操作..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部操作</option>
+                            <option>场景管理</option>
+                            <option>题目管理</option>
+                            <option>用户管理</option>
+                            <option>订单管理</option>
+                        </select>
+                        <input type="date" class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                    </div>
+                    <button class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <i class="fas fa-file-export"></i>导出日志
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium">时间</th>
+                                <th class="px-6 py-4 font-medium">操作人</th>
+                                <th class="px-6 py-4 font-medium">操作类型</th>
+                                <th class="px-6 py-4 font-medium">操作内容</th>
+                                <th class="px-6 py-4 font-medium">IP地址</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 14:30:25</td>
+                                <td class="px-6 py-4">管理员</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs">场景管理</span></td>
+                                <td class="px-6 py-4">添加新场景「Next.js 高频关键字」</td>
+                                <td class="px-6 py-4 text-gray-600">192.168.1.1</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 14:25:10</td>
+                                <td class="px-6 py-4">管理员</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">题目管理</span></td>
+                                <td class="px-6 py-4">批量导入题目 150 道</td>
+                                <td class="px-6 py-4 text-gray-600">192.168.1.1</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 14:20:33</td>
+                                <td class="px-6 py-4">管理员</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-purple-100 text-purple-700 text-xs">用户管理</span></td>
+                                <td class="px-6 py-4">禁用用户「王五」</td>
+                                <td class="px-6 py-4 text-gray-600">192.168.1.1</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15 14:15:08</td>
+                                <td class="px-6 py-4">管理员</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs">订单管理</span></td>
+                                <td class="px-6 py-4">退款订单 ORD202401140003</td>
+                                <td class="px-6 py-4 text-gray-600">192.168.1.1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">每页显示</span>
+                        <select class="px-3 py-1 rounded border border-gray-200 outline-none text-sm" onchange="changePageSize('logs', this.value)">
+                            <option value="5">5条</option>
+                            <option value="10" selected>10条</option>
+                            <option value="20">20条</option>
+                        </select>
+                        <span class="text-sm text-gray-500">共 456 条</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packages Module -->
+            <div id="module-packages" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部状态</option>
+                            <option>已启用</option>
+                            <option>已禁用</option>
+                        </select>
+                    </div>
+                    <button onclick="openModal('packageModal')" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2">
+                        <i class="fas fa-plus"></i>添加套餐
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 月卡 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">已启用</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">月卡 VIP</h3>
+                            <p class="text-sm text-gray-500 mb-4">每月自动续费</p>
+                            <div class="text-3xl font-bold text-gray-900 mb-4">¥29<span class="text-sm font-normal text-gray-500">/月</span></div>
+                            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 全部场景无限练习</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> AI评估无限使用</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 专属客服支持</li>
+                            </ul>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">编辑</button>
+                                <button class="flex-1 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm">禁用</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 季卡 -->
+                    <div class="bg-white rounded-xl shadow-sm border-2 border-primary-200 overflow-hidden relative">
+                        <div class="absolute top-0 right-0 bg-primary-600 text-white text-xs px-3 py-1 rounded-bl-lg">推荐</div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">已启用</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">季卡 VIP</h3>
+                            <p class="text-sm text-gray-500 mb-4">最受欢迎的选择</p>
+                            <div class="text-3xl font-bold text-gray-900 mb-4">¥79<span class="text-sm font-normal text-gray-500">/季</span></div>
+                            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 全部场景无限练习</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> AI评估无限使用</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 专属客服支持</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 节省¥8</li>
+                            </ul>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">编辑</button>
+                                <button class="flex-1 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm">禁用</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 年卡 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-crown text-white text-xl"></i>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">已启用</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">年卡 VIP</h3>
+                            <p class="text-sm text-gray-500 mb-4">性价比最高</p>
+                            <div class="text-3xl font-bold text-gray-900 mb-4">¥299<span class="text-sm font-normal text-gray-500">/年</span></div>
+                            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 全部场景无限练习</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> AI评估无限使用</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 专属客服支持</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> 节省¥49</li>
+                            </ul>
+                            <div class="flex gap-2">
+                                <button class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm">编辑</button>
+                                <button class="flex-1 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm">禁用</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Codes Module -->
+            <div id="module-codes" class="module-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <input type="text" placeholder="搜索兑换码..." class="px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none w-64">
+                        <select class="px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>全部状态</option>
+                            <option>未使用</option>
+                            <option>已使用</option>
+                            <option>已过期</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="generateCodes()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                            <i class="fas fa-plus"></i>生成兑换码
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generate Codes Modal Trigger Area -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">套餐类型</label>
+                            <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                                <option>月卡 VIP</option>
+                                <option>季卡 VIP</option>
+                                <option>年卡 VIP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">生成数量</label>
+                            <input type="number" value="10" min="1" max="100" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">有效期至</label>
+                            <input type="date" class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="generateCodes()" class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                批量生成
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-sm text-gray-500">
+                                <th class="px-6 py-4 font-medium">兑换码</th>
+                                <th class="px-6 py-4 font-medium">套餐</th>
+                                <th class="px-6 py-4 font-medium">有效期</th>
+                                <th class="px-6 py-4 font-medium">状态</th>
+                                <th class="px-6 py-4 font-medium">使用者</th>
+                                <th class="px-6 py-4 font-medium">使用时间</th>
+                                <th class="px-6 py-4 font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="px-6 py-4"><code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">ABCD-1234-EFGH-5678</code></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs">季卡 VIP</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-12-31</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">未使用</span></td>
+                                <td class="px-6 py-4 text-gray-400">-</td>
+                                <td class="px-6 py-4 text-gray-400">-</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-copy"></i></button>
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4"><code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">WXYZ-9876-QRST-5432</code></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-green-100 text-green-700 text-xs">月卡 VIP</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-06-30</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">已使用</span></td>
+                                <td class="px-6 py-4">张三</td>
+                                <td class="px-6 py-4 text-gray-600">2024-01-15</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-gray-400 cursor-not-allowed"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4"><code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">MNOP-1111-QQRS-2222</code></td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-amber-100 text-amber-700 text-xs">年卡 VIP</span></td>
+                                <td class="px-6 py-4 text-gray-600">2024-03-01</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">已过期</span></td>
+                                <td class="px-6 py-4 text-gray-400">-</td>
+                                <td class="px-6 py-4 text-gray-400">-</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">每页显示</span>
+                        <select class="px-3 py-1 rounded border border-gray-200 outline-none text-sm" onchange="changePageSize('codes', this.value)">
+                            <option value="5">5条</option>
+                            <option value="10" selected>10条</option>
+                            <option value="20">20条</option>
+                        </select>
+                        <span class="text-sm text-gray-500">共 156 条</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">上一页</button>
+                        <button class="px-3 py-1 rounded bg-primary-600 text-white">1</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scene Modal -->
+    <div id="sceneModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl w-full max-w-lg p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">添加场景</h3>
+                <button onclick="closeModal('sceneModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">场景名称</label>
+                    <input type="text" placeholder="请输入场景名称" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">难度等级</label>
+                    <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                        <option>L1 基础</option>
+                        <option>L2 进阶</option>
+                        <option>L3 困难</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">场景图标</label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center cursor-pointer border-2 border-primary-500"><i class="fas fa-database text-blue-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-cyan-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-bolt text-cyan-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fab fa-node-js text-emerald-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-cloud text-purple-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-robot text-pink-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-code text-amber-600"></i></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">场景描述</label>
+                    <textarea rows="3" placeholder="请输入场景描述" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" checked class="w-4 h-4 rounded border-gray-300 text-primary-600">
+                        <span class="text-sm text-gray-600">启用此场景</span>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('sceneModal')" class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                    <button type="button" class="flex-1 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="questionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">添加题目</h3>
+                <button onclick="closeModal('questionModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">所属场景</label>
+                        <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>请选择场景</option>
+                            <option>数据库指令答题</option>
+                            <option>数据库快捷指令速查</option>
+                            <option>Next.js 基础语法答题</option>
+                            <option>Next.js 高频关键字</option>
+                            <option>Cloud Code 指令答题</option>
+                            <option>AI 编程提示词</option>
+                            <option>编程专业英语</option>
+                            <option>Cloud Code 开发命令</option>
+                            <option>开发进阶篇</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">题目类型</label>
+                        <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>拼写题</option>
+                            <option>选择题</option>
+                            <option>填空题</option>
+                            <option>问答题</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">题目内容</label>
+                    <textarea rows="2" placeholder="请输入题目内容" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">正确答案</label>
+                    <input type="text" placeholder="请输入正确答案" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">答案解析</label>
+                    <textarea rows="2" placeholder="请输入答案解析（可选）" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">难度等级</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="level" value="L1" checked class="w-4 h-4 text-primary-600">
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">L1 基础</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="level" value="L2" class="w-4 h-4 text-primary-600">
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">L2 进阶</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="level" value="L3" class="w-4 h-4 text-primary-600">
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">L3 困难</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('questionModal')" class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                    <button type="button" class="flex-1 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Package Modal -->
+    <div id="packageModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl w-full max-w-lg p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">添加/编辑套餐</h3>
+                <button onclick="closeModal('packageModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">套餐名称</label>
+                    <input type="text" placeholder="如：月卡 VIP" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">套餐类型</label>
+                        <select class="w-full px-4 py-2 rounded-lg border border-gray-200 outline-none">
+                            <option>月卡</option>
+                            <option>季卡</option>
+                            <option>年卡</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">价格</label>
+                        <input type="number" placeholder="29" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">套餐描述</label>
+                    <textarea rows="3" placeholder="请输入套餐权益描述" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">套餐图标</label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center cursor-pointer border-2 border-primary-500"><i class="fas fa-calendar-alt text-green-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-calendar-check text-blue-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-crown text-amber-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-star text-purple-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-gem text-pink-600"></i></div>
+                        <div class="w-12 h-12 rounded-lg bg-cyan-100 flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-primary-300"><i class="fas fa-infinity text-cyan-600"></i></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" checked class="w-4 h-4 rounded border-gray-300 text-primary-600">
+                        <span class="text-sm text-gray-600">启用此套餐</span>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('packageModal')" class="flex-1 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                    <button type="button" class="flex-1 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showModule(moduleName) {
+            // Hide all modules
+            document.querySelectorAll('.module-content').forEach(el => el.classList.add('hidden'));
+
+            // Show selected module
+            document.getElementById('module-' + moduleName).classList.remove('hidden');
+
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.sidebar-item').classList.add('active');
+
+            // Update header
+            const titles = {
+                'dashboard': ['数据概览', '查看平台整体数据统计'],
+                'scenes': ['场景管理', '管理系统中的练习场景'],
+                'questions': ['题目管理', '管理系统中的练习题目'],
+                'import': ['题目导入', '批量导入题目数据'],
+                'users': ['用户管理', '管理系统用户'],
+                'orders': ['订单管理', '管理系统订单'],
+                'packages': ['订阅套餐', '管理VIP订阅套餐'],
+                'codes': ['兑换码', '生成和管理兑换码'],
+                'logs': ['操作日志', '查看管理操作记录']
+            };
+            document.getElementById('pageTitle').textContent = titles[moduleName][0];
+            document.getElementById('pageSubtitle').textContent = titles[moduleName][1];
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Close modal on backdrop click
+        document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+
+        function exportQuestions() {
+            const sceneSelect = document.getElementById('exportSceneSelect');
+            const selectedText = sceneSelect.options[sceneSelect.selectedIndex].text;
+            const selectedValue = sceneSelect.value;
+
+            if (selectedValue === '') {
+                alert('请先选择要导出的场景');
+                return;
+            }
+
+            alert('正在导出「' + selectedText + '」的题目...');
+            // 这里调用后端接口导出题目
+        }
+
+        function changePageSize(module, size) {
+            console.log(module + ' 每页显示改为 ' + size + ' 条');
+            // 实际应用中这里应该调用后端API刷新数据
+        }
+
+        function changePage(module, page) {
+            if (page === 'prev') {
+                console.log(module + ' 上一页');
+            } else if (page === 'next') {
+                console.log(module + ' 下一页');
+            } else {
+                console.log(module + ' 跳转到第 ' + page + ' 页');
+            }
+            // 实际应用中这里应该调用后端API获取对应页的数据
+        }
+
+        function confirmImport() {
+            const batchFileInput = document.getElementById('batchFileInput');
+            if (!batchFileInput || !batchFileInput.files || batchFileInput.files.length === 0) {
+                alert('请先选择要导入的文件');
+                return;
+            }
+            alert('正在导入题目，请稍候...');
+            // 这里调用后端接口执行导入
+        }
+
+        function generateCodes() {
+            alert('正在生成兑换码，请稍候...');
+            // 这里调用后端接口生成兑换码
+        }
+    </script>
+</body>
+</html>

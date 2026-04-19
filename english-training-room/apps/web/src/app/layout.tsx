@@ -6,7 +6,7 @@ import Providers from "@/components/AuthProvider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "英语练功房 - AI 评估的英语翻译训练平台",
+  title: "AI编程练功房 - AI 评估的英语翻译训练平台",
   description: "通过场景化题库、AI实时反馈与打怪升级的互动体验，帮助用户高效提升英语实际应用能力",
 };
 

@@ -9,7 +9,7 @@ export default async function PracticePage({ params }: PageProps) {
   const { sceneId } = await params;
 
   // Validate sceneId is a valid code
-  const validCodes = ['daily', 'travel', 'business', 'cet', 'ielts', 'it-programming'];
+  const validCodes = ['sql-crud', 'sql-shortcuts', 'nextjs-basic', 'nextjs-shortcuts', 'cloudcode', 'ai-prompt', 'dev-english', 'cloudcode-commands', 'advanced'];
   if (!validCodes.includes(sceneId)) {
     notFound();
   }

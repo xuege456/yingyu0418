@@ -84,12 +84,15 @@ export default function ProgressPage() {
 
   const getSceneIcon = (sceneCode: string) => {
     const icons: Record<string, string> = {
-      'it-programming': 'fa-code',
-      'daily': 'fa-home',
-      'travel': 'fa-plane',
-      'business': 'fa-briefcase',
-      'cet': 'fa-book',
-      'ielts': 'fa-graduation-cap',
+      'sql-crud': 'fa-database',
+      'sql-shortcuts': 'fa-bolt',
+      'nextjs-basic': 'fa-react',
+      'nextjs-shortcuts': 'fa-terminal',
+      'cloudcode': 'fa-cloud',
+      'ai-prompt': 'fa-robot',
+      'dev-english': 'fa-code',
+      'cloudcode-commands': 'fa-terminal',
+      'advanced': 'fa-rocket',
     };
     return icons[sceneCode] || 'fa-book';
   };

@@ -4,19 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SceneCard from '@/components/SceneCard';
-
-interface Scene {
-  id: string;
-  code: string;
-  name: string;
-  description: string;
-  icon: string;
-  iconBg: string;
-  category: string;
-  difficulty: string;
-  questionCount: number;
-  tags: string[];
-}
+import { scenes as mockScenes, Scene } from '@/lib/mock-data';
 
 type DifficultyFilter = 'ALL' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 
@@ -35,11 +23,16 @@ export default function PracticeLibraryPage() {
     try {
       const res = await fetch('/api/scenes');
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.data.length > 0) {
         setScenes(data.data);
+      } else {
+        // Fallback to mock data when API is unavailable or returns empty
+        setScenes(mockScenes);
       }
     } catch (err) {
-      console.error('Failed to fetch scenes:', err);
+      // Fallback to mock data when API is unavailable
+      console.error('Failed to fetch scenes, using mock data:', err);
+      setScenes(mockScenes);
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +147,7 @@ export default function PracticeLibraryPage() {
               <SceneCard
                 key={scene.id}
                 scene={scene}
-                showHotTag={scene.code === 'it-programming'}
+                showHotTag={scene.tags?.includes('热门')}
               />
             ))}
           </div>

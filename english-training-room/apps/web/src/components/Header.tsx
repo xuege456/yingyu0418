@@ -47,7 +47,7 @@ export default function Header() {
             <div className={`w-9 h-9 rounded-lg ${gradientBg} flex items-center justify-center`}>
               <i className="fas fa-language text-white text-lg" />
             </div>
-            <span className="font-bold text-xl text-gray-900">英语练功房</span>
+            <span className="font-bold text-xl text-gray-900">AI编程练功房</span>
           </Link>
 
           {/* Navigation */}

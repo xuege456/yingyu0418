@@ -93,7 +93,7 @@ export default function ResultPage() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
-                href="/practice/it-programming"
+                href="/practice"
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <i className="fas fa-arrow-left" />
@@ -304,7 +304,7 @@ export default function ResultPage() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link
-              href="/practice/it-programming"
+              href="/practice"
               className="w-full sm:w-auto px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
             >
               <i className="fas fa-arrow-left" />
@@ -316,7 +316,7 @@ export default function ResultPage() {
                 分享结果
               </button>
               <Link
-                href="/practice/it-programming"
+                href="/practice"
                 className="flex-1 sm:flex-none px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
               >
                 <i className="fas fa-arrow-right" />
@@ -357,7 +357,7 @@ export default function ResultPage() {
               <div className={`w-7 h-7 rounded-lg ${gradientBg} flex items-center justify-center`}>
                 <i className="fas fa-language text-white text-xs" />
               </div>
-              <span>英语练功房</span>
+              <span>AI编程练功房</span>
             </div>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-white transition-colors">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
+import { scenes as mockScenes, sceneQuestions } from '@/lib/mock-data';
 
 const gradientBg = 'bg-gradient-to-r from-blue-600 to-purple-600';
 
@@ -89,9 +90,46 @@ export default function PracticePageClient({
         if (questionsData.success) {
           setQuestions(questionsData.data.questions);
         }
+
+        // If API returned empty, fallback to mock data
+        if (!sceneData.success || !questionsData.success || questionsData.data?.questions?.length === 0) {
+          const mockScene = mockScenes.find((s) => s.code === sceneCode);
+          if (mockScene) {
+            setScene({
+              id: mockScene.id,
+              code: mockScene.code,
+              name: mockScene.name,
+              description: mockScene.description,
+              icon: mockScene.icon,
+              iconBg: mockScene.iconBg,
+              category: mockScene.category,
+              difficulty: mockScene.difficulty,
+            });
+            const mockQuestions = sceneQuestions[mockScene.id] || [];
+            if (mockQuestions.length > 0) {
+              setQuestions(mockQuestions);
+            }
+          }
+        }
       } catch (err) {
-        console.error('Failed to fetch data:', err);
-        setError('加载数据失败，请刷新重试');
+        console.error('Failed to fetch data, using mock data:', err);
+        // Fallback to mock data when API is unavailable
+        const mockScene = mockScenes.find((s) => s.code === sceneCode);
+        if (mockScene) {
+          setScene({
+            id: mockScene.id,
+            code: mockScene.code,
+            name: mockScene.name,
+            description: mockScene.description,
+            icon: mockScene.icon,
+            iconBg: mockScene.iconBg,
+            category: mockScene.category,
+            difficulty: mockScene.difficulty,
+          });
+          setQuestions(sceneQuestions[mockScene.id] || []);
+        } else {
+          setError('加载数据失败，请刷新重试');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -505,7 +543,7 @@ export default function PracticePageClient({
               <div className={`w-7 h-7 rounded-lg ${gradientBg} flex items-center justify-center`}>
                 <i className="fas fa-language text-white text-xs" />
               </div>
-              <span>英语练功房</span>
+              <span>AI编程练功房</span>
             </div>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-white transition-colors">

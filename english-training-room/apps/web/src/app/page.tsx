@@ -60,7 +60,7 @@ export default function HomePage() {
                   <div className="text-sm text-gray-500 mt-1">用户满意度</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-primary-600">6+</div>
+                  <div className="text-3xl font-bold text-primary-600">9</div>
                   <div className="text-sm text-gray-500 mt-1">训练场景</div>
                 </div>
               </div>
@@ -82,7 +82,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {scenes.map((scene) => (
-                <SceneCard key={scene.id} scene={scene} showHotTag={scene.code === 'it-programming'} />
+                <SceneCard key={scene.id} scene={scene} />
               ))}
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">核心功能</h2>
-              <p className="mt-4 text-lg text-gray-600">为什么选择英语练功房？</p>
+              <p className="mt-4 text-lg text-gray-600">为什么选择AI编程练功房？</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -229,7 +229,7 @@ export default function HomePage() {
                 </div>
 
                 <Link
-                  href="/practice/it-programming"
+                  href="/practice"
                   className="mt-8 inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 text-base font-semibold text-primary-600 hover:bg-gray-100 transition-all shadow-xl"
                 >
                   <i className="fas fa-code mr-2" />

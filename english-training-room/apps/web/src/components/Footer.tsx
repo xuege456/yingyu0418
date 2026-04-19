@@ -13,7 +13,7 @@ export default function Footer() {
               <div className={`w-9 h-9 rounded-lg ${gradientBg} flex items-center justify-center`}>
                 <i className="fas fa-language text-white text-lg" />
               </div>
-              <span className="font-bold text-xl">英语练功房</span>
+              <span className="font-bold text-xl">AI编程练功房</span>
             </div>
             <p className="text-gray-400 max-w-md">
               AI驱动的英语翻译练习平台，通过场景化题库和智能反馈，帮助你高效提升英语实际应用能力。
@@ -73,7 +73,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-400 text-sm">
-            © 2024 英语练功房. All rights reserved.
+            © 2024 AI编程练功房. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a
