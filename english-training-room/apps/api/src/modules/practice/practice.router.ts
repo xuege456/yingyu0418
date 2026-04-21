@@ -2,7 +2,6 @@ import { Router } from "express";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import prisma from "../../db/index.js";
-import { authMiddleware } from "../auth/auth.router.js";
 
 export const practiceRouter = Router();
 

@@ -137,7 +137,7 @@ model PracticeRecord {
   userInput        String
   evaluationResult Json
   totalScore       Int
-  dimensions       String[]
+  dimensions       Json
   feedback         String
   betterExpressions Json?
   isFavorite       Boolean  @default(false)

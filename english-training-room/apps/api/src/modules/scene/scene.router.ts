@@ -14,6 +14,19 @@ const ICON_MAP: Record<string, { icon: string; iconBg: string }> = {
   IT_PROGRAMMING: { icon: "fa-code", iconBg: "from-blue-500 to-purple-600" },
 };
 
+// Scene-specific icon overrides
+const SCENE_ICON_MAP: Record<string, { icon: string; iconBg: string }> = {
+  "sql-crud": { icon: "fa-database", iconBg: "from-blue-500 to-indigo-600" },
+  "sql-shortcuts": { icon: "fa-bolt", iconBg: "from-yellow-500 to-amber-600" },
+  "nextjs-basic": { icon: "fa-microchip", iconBg: "from-emerald-500 to-teal-600" },
+  "nextjs-shortcuts": { icon: "fa-keyboard", iconBg: "from-lime-500 to-green-600" },
+  "cloudcode": { icon: "fa-cloud", iconBg: "from-purple-500 to-violet-600" },
+  "ai-prompt": { icon: "fa-magic", iconBg: "from-pink-500 to-rose-600" },
+  "dev-english": { icon: "fa-book-open", iconBg: "from-amber-500 to-orange-600" },
+  "cloudcode-commands": { icon: "fa-server", iconBg: "from-sky-500 to-cyan-600" },
+  "advanced": { icon: "fa-paper-plane", iconBg: "from-red-500 to-pink-600" },
+};
+
 const DifficultySchema = z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]);
 
 /**
@@ -38,8 +51,8 @@ scenesRouter.get("/", async (req, res) => {
       code: scene.code,
       name: scene.name,
       description: scene.description || "",
-      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
-      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      icon: scene.icon || SCENE_ICON_MAP[scene.code]?.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: SCENE_ICON_MAP[scene.code]?.iconBg || ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
       category: scene.category,
       difficulty: scene.difficulty,
       questionCount: scene._count.questions,
@@ -94,8 +107,8 @@ scenesRouter.get("/:code", async (req, res) => {
       code: scene.code,
       name: scene.name,
       description: scene.description || "",
-      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
-      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      icon: scene.icon || SCENE_ICON_MAP[scene.code]?.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: SCENE_ICON_MAP[scene.code]?.iconBg || ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
       category: scene.category,
       difficulty: scene.difficulty,
       questionCount: scene._count.questions,
@@ -174,8 +187,8 @@ scenesRouter.get("/:code/questions", async (req, res) => {
       code: scene.code,
       name: scene.name,
       description: scene.description || "",
-      icon: scene.icon || ICON_MAP[scene.category]?.icon || "fa-book",
-      iconBg: ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
+      icon: scene.icon || SCENE_ICON_MAP[scene.code]?.icon || ICON_MAP[scene.category]?.icon || "fa-book",
+      iconBg: SCENE_ICON_MAP[scene.code]?.iconBg || ICON_MAP[scene.category]?.iconBg || "from-gray-500 to-gray-600",
       category: scene.category,
       difficulty: scene.difficulty,
     };

@@ -194,7 +194,8 @@ export default function ResultPage() {
                 <div className="lg:col-span-2 space-y-4">
                   <h3 className="font-semibold text-gray-900 mb-4">多维度评分</h3>
 
-                  {result.dimensions.map((dim, idx) => {
+                  {result.dimensions && result.dimensions.length > 0 ? (
+                    result.dimensions.map((dim, idx) => {
                     const { icon, color } = getDimensionIcon(dim.name);
                     return (
                       <div key={idx}>
@@ -213,7 +214,9 @@ export default function ResultPage() {
                         </div>
                       </div>
                     );
-                  })}
+                  }) : (
+                    <p className="text-gray-500 text-sm">暂无维度评分数据</p>
+                  )}
                 </div>
               </div>
             </div>

@@ -142,7 +142,7 @@ export default function ProgressPage() {
         { name: '准确度', value: stats.radarData.accuracy },
         { name: '流畅度', value: stats.radarData.fluency },
         { name: '词汇量', value: stats.radarData.vocabulary },
-        { name: '专业度', value: stats.radarData.accuracy },
+        { name: '专业度', value: stats.radarData.idiomaticity },
         { name: '语法', value: stats.radarData.idiomaticity },
       ]
     : [

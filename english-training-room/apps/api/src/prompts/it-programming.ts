@@ -138,7 +138,10 @@ export function buildEvaluationPrompt(
 
   // Apply scene override if applicable
   if (sceneCode) {
-    const sceneOverrideKey = sceneCode.toUpperCase() as keyof typeof IT_PROGRAMMING_PROMPT_CONFIG.scene_overrides;
+    // Convert kebab-case (e.g., "code-review") to SCREAMING_SNAKE_CASE (e.g., "CODE_REVIEW")
+    const sceneOverrideKey = sceneCode
+      .toUpperCase()
+      .replace(/-/g, "_") as keyof typeof IT_PROGRAMMING_PROMPT_CONFIG.scene_overrides;
     const sceneOverride = IT_PROGRAMMING_PROMPT_CONFIG.scene_overrides[sceneOverrideKey];
 
     if (sceneOverride) {

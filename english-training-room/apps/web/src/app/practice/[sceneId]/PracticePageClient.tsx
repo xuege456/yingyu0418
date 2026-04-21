@@ -154,11 +154,16 @@ export default function PracticePageClient({
 
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       const response = await fetch('/api/evaluation', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           questionType: currentQuestion.type || 'TRANSLATION_CN_TO_EN',
           userInput: userInput,
